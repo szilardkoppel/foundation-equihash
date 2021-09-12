@@ -1,0 +1,49 @@
+{
+    "name": "foundation-equihash",
+    "version": "0.0.1",
+    "description": "function to check whether an Equihash solution is valid",
+    "keywords": [
+        "mining",
+        "equihash",
+        "equihashverify"
+    ],
+    "homepage": "https://github.com/Blinkhash/foundation-equihash",
+    "bugs": {
+        "url": "https://github.com/Blinkhash/foundation-equihash/issues"
+    },
+    "license": "MIT",
+    "author": {
+        "name": "S-NOMP Developers"
+    },
+    "scripts": {
+        "install": "env V=1 node-gyp rebuild",
+        "test": "mocha"
+    },
+    "contributors": [
+        "Alberto Garoffolo",
+        "cronic",
+        "egyptianbman",
+        "LitecoinZ",
+        "Coinblockers",
+        "MilesManley",
+        "Nick Sarris",
+        "S-NOMP Developers"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Blinkhash/foundation-equihash.git"
+    },
+    "dependencies": {
+        "bindings": "*",
+        "libsodium": "^0.7.3",
+        "nan": "*",
+        "node-gyp": "*"
+    },
+    "engines": {
+        "node": ">=0.12"
+    },
+    "devDependencies": {
+        "mocha": "^5.0.4"
+    },
+    "readmeFilename": "README.md"
+}
