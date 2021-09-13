@@ -11,12 +11,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - name: Test Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
         with:
-          node-version: '10.x'
-          registry-url: 'https://npm.pkg.github.com'
+          node-version: ${{ matrix.node-version }}
       - run: sudo apt-get install build-essential libsodium-dev libboost-system-dev
       - run: npm install -g mocha
       - run: npm install

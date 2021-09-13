@@ -4,95 +4,65 @@
 #include <v8.h>
 #include <stdint.h>
 #include "crypto/equihash.h"
-
 #include <vector>
+
+using namespace node;
 using namespace v8;
 
-const char* ToCString(const String::Utf8Value& value) {
+#define THROW_ERROR_EXCEPTION(x) Nan::ThrowError(x)
+
+const char* ToCString(const Nan::Utf8String& value) {
   return *value ? *value : "<string conversion failed>";
 }
 
-int verifyEH(const char *hdr, const std::vector<unsigned char> &soln, const char *personalizationString, unsigned int N, unsigned int K) {
-    // Hash state
-    crypto_generichash_blake2b_state state;
-    EhInitialiseState(N, K, state, personalizationString);
+NAN_METHOD(verify) {
 
-    crypto_generichash_blake2b_update(&state, (const unsigned char*)hdr, 140);
+    if (info.Length() < 5)
+        return THROW_ERROR_EXCEPTION("hasher-equihash.verify - 5 arguments expected");
+    if (!info[3]->IsInt32() || !info[4]->IsInt32())
+        return THROW_ERROR_EXCEPTION("hasher-equihash.verify - Fourth and fifth parameters should be equihash parameters (n, k)");
 
-    bool isValid;
-    EhIsValidSolution(N, K, state, soln, isValid);
-
-	return isValid;
-}
-
-void Verify(const v8::FunctionCallbackInfo<Value>& args) {
     Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);
 
-    if (args.Length() < 4) {
-        isolate->ThrowException(
-            Exception::TypeError(String::NewFromUtf8(isolate, "Wrong number of arguments"))
-        );
+    Isolate *argsIsolate = info.GetIsolate();
+    Local<Context> context = argsIsolate->GetCurrentContext();
+    Local<Object> header = info[0]->ToObject(context).ToLocalChecked();
+    Local<Object> solution = info[1]->ToObject(context).ToLocalChecked();
 
-        return;
+    if (!node::Buffer::HasInstance(header) || !node::Buffer::HasInstance(solution)) {
+        return THROW_ERROR_EXCEPTION("hasher-equihash.verify - First two arguments should be buffer objects");
     }
 
-    if (!args[3]->IsInt32() || !args[4]->IsInt32()) {
-        isolate->ThrowException(
-            Exception::TypeError(String::NewFromUtf8(isolate, "Fourth and fifth parameters should be equihash parameters (n, k)"))
-        );
-
-        return;
-    }
-
-    Local<Object> header = args[0]->ToObject();
-    Local<Object> solution = args[1]->ToObject();
-
-    if(!node::Buffer::HasInstance(header) || !node::Buffer::HasInstance(solution)) {
-        isolate->ThrowException(
-            Exception::TypeError(String::NewFromUtf8(isolate, "First two arguments should be buffer objects."))
-        );
-
-        return;
-    }
-
-    if (!args[2]->IsString()) {
-        isolate->ThrowException(
-            Exception::TypeError(String::NewFromUtf8(isolate, "Third argument should be the personalization string."))
-        );
-
-        return;
+    if (!info[2]->IsString()) {
+        return THROW_ERROR_EXCEPTION("hasher-equihash.verify - Third argument should be the personalization string");
     }
 
     const char *hdr = node::Buffer::Data(header);
-    if(node::Buffer::Length(header) != 140) {
-        //invalid hdr length
-        args.GetReturnValue().Set(false);
+    if (node::Buffer::Length(header) != 140) {
+        info.GetReturnValue().Set(false);
         return;
     }
 
     const char *soln = node::Buffer::Data(solution);
-
     std::vector<unsigned char> vecSolution(soln, soln + node::Buffer::Length(solution));
-
-    String::Utf8Value str(args[2]);
+    Nan::Utf8String str(info[2]);
     const char* personalizationString = ToCString(str);
 
-    // Validate for N, K (4th and 5th parameters)
-    bool result = verifyEH(
-        hdr,
-        vecSolution,
-        personalizationString,
-        args[3].As<Uint32>()->Value(),
-        args[4].As<Uint32>()->Value()
-    );
+    unsigned int N = info[3].As<Uint32>()->Value();
+    unsigned int K = info[4].As<Uint32>()->Value();
 
-    args.GetReturnValue().Set(result);
+    crypto_generichash_blake2b_state state;
+    EhInitialiseState(N, K, state, personalizationString);
+    crypto_generichash_blake2b_update(&state, (const unsigned char*)hdr, 140);
+
+    bool isValid;
+    EhIsValidSolution(N, K, state, vecSolution, isValid);
+    info.GetReturnValue().Set(isValid);
 }
 
-
-void Init(Handle<Object> exports) {
-    NODE_SET_METHOD(exports, "verify", Verify);
+NAN_MODULE_INIT(init) {
+    Nan::Set(target, Nan::New("verify").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(verify)).ToLocalChecked());
 }
 
-NODE_MODULE(equihashverify, Init)
+NODE_MODULE(hashermtp, init)
