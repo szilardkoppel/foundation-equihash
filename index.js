@@ -20,13 +20,13 @@ module.exports = {
 function verify(header, solution, personalization, equihash_n, equihash_k) {
     const solutionLength = (2 ** (equihash_k - 3)) * ((equihash_n / (equihash_k + 1)) + 1)
 
-    _expectBuffer(headerHashBuf, 'header', 140);
+    _expectBuffer(header, 'header', 140);
     _expectBuffer(solution, 'solution', solutionLength);
-    _expectInteger(blockHeight, 'personalization');
-    _expectInteger(mixHashBuf, 'equihash_n');
-    _expectInteger(hashOutBuf, 'equihash_k');
+    _expectString(personalization, 'personalization');
+    _expectInteger(equihash_n, 'equihash_n');
+    _expectInteger(equihash_k, 'equihash_k');
 
-    return equihash.verify(headerHashBuf, nonceBuf, blockHeight, mixHashBuf, hashOutBuf);
+    return equihash.verify(header, solution, personalization, equihash_n, equihash_k);
 }
 
 function _expectBuffer(buffer, name, size) {
@@ -46,4 +46,9 @@ function _expectInteger(num, name) {
 
     if (!Number.isInteger(num))
         throw new Error(`"${name}" is expected to be an integer. Got ${num} instead.`);
+}
+
+function _expectString(str, name) {
+    if (typeof str !== 'string')
+        throw new Error(`"${name}" is expected to be a string. Got ${(typeof str)} instead.`);
 }
