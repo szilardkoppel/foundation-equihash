@@ -3,11 +3,13 @@
 #include <node_buffer.h>
 #include <v8.h>
 #include <stdint.h>
+#include <stdexcept>
 #include "crypto/equihash.h"
 #include <vector>
 
 using namespace node;
 using namespace v8;
+using namespace std;
 
 #define THROW_ERROR_EXCEPTION(x) Nan::ThrowError(x)
 
@@ -45,7 +47,7 @@ NAN_METHOD(verify) {
     }
 
     const char *soln = node::Buffer::Data(solution);
-    std::vector<unsigned char> vecSolution(soln, soln + node::Buffer::Length(solution));
+    vector<unsigned char> vecSolution(soln, soln + node::Buffer::Length(solution));
     Nan::Utf8String str(info[2]);
     const char* personalizationString = ToCString(str);
 
