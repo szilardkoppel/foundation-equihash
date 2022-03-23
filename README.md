@@ -5,7 +5,7 @@
 [![Downloads](https://img.shields.io/npm/dm/foundation-equihash.svg)](https://www.npmjs.com/package/foundation-equihash)
 [![Version](https://img.shields.io/npm/v/foundation-equihash.svg)](https://www.npmjs.com/package/foundation-equihash)
 [![Known Vulnerabilities](https://snyk.io/test/npm/foundation-equihash/badge.svg)](https://snyk.io/test/npm/foundation-equihash)
-[![Discord](https://img.shields.io/discord/738590795384356904)](https://discord.gg/8xtHZFKJQY)
+[![Discord](https://img.shields.io/discord/738590795384356904)](https://discord.gg/rNjez6VgNF)
 
 This is a Node module for simple hashing and verifying inputs using the
 Equihash proof-of-work algorithm as implemented by [ZCash](https://github.com/zcash/zcash/releases/tag/v4.4.1). Most of the native code comes from or is adapted from [ZCash code](https://github.com/zcash/zcash). This module has been developed and tested on [Node v10.16.3](https://nodejs.org/) and
@@ -13,7 +13,7 @@ Equihash proof-of-work algorithm as implemented by [ZCash](https://github.com/zc
 
 #### Need Support?
 
-If you need help with a code-related matter, the first place to look is our [Discord](https://discord.gg/8xtHZFKJQY), where the developers will be available to answer any questions. However, please do not come to me with issues regarding setup. Use Google and the existing documentation for that.
+If you need help with a code-related matter, the first place to look is our [Discord](https://discord.gg/rNjez6VgNF), where the developers will be available to answer any questions. However, please do not come to me with issues regarding setup. Use Google and the existing documentation for that.
 
 ---
 
